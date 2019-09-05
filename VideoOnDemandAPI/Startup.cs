@@ -17,6 +17,8 @@ using Microsoft.IdentityModel.Tokens;
 using VideoOnDemandAPI.Helpers;
 using VideoOnDemandAPI.Services;
 using VideoOnDemandAPI.Services.Impl;
+using AutoMapper;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace VideoOnDemandAPI
 {
@@ -33,6 +35,7 @@ namespace VideoOnDemandAPI
     public void ConfigureServices(IServiceCollection services)
     {
       services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+      services.AddAutoMapper(typeof(Startup));
       services.AddDbContext<VideoOnDemandDBContext>(options => options.UseInMemoryDatabase(databaseName: "B"));
 
       // configure strongly typed settings objects
@@ -60,6 +63,12 @@ namespace VideoOnDemandAPI
         };
       });
 
+      // Add Swagger for API Documentation and mock testing
+      services.AddSwaggerGen(c =>
+      {
+        c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
+      });
+
       // configure DI for application services
       services.AddScoped<IUserService, UserService>();
     }
@@ -80,10 +89,17 @@ namespace VideoOnDemandAPI
       app.UseCors(x => x
           .AllowAnyOrigin()
           .AllowAnyMethod()
-          .AllowAnyHeader());
+          .AllowAnyHeader()
+          .AllowCredentials());
 
-      app.UseHttpsRedirection();
+      app.UseAuthentication();
       app.UseMvc();
+
+      app.UseSwagger();
+      app.UseSwaggerUI(c =>
+      {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+      });
     }
   }
 }

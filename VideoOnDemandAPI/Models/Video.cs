@@ -11,7 +11,7 @@ namespace VideoOnDemandAPI.Models
 
     public string Description { get; set; }
 
-    public VideoCategory Category { get; set; }
+    public int VideoCategoryId { get; set; }
 
     public double Price { get; set; }
   }

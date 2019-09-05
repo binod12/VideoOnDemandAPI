@@ -8,14 +8,19 @@ using VideoOnDemandAPI.Models;
 
 namespace VideoOnDemandAPI
 {
-  public class ApplicationDbContext : DbContext
+  public class VideoOnDemandDBContext : DbContext
   {
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) 
+    public VideoOnDemandDBContext(DbContextOptions<VideoOnDemandDBContext> options) 
       : base(options)
     {
 
     }
 
     public DbSet<User> Users { get; set; }
+
+    public DbSet<Video> Video { get; set; }
+
+    public DbSet<VideoCategory> VideoCategory { get; set; }
+
   }
 }
