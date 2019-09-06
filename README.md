@@ -1,20 +1,21 @@
-# VideoOnDemandAPI
  
- Video On Demand ASP.NET Core Web API
- Register new User (For Admin & Viewer)
- - Viewer: /api/Users/register
- - Admin: /api/Users/registeradmin
- Login (For Admin & Viewer)
- - /api/Users/authenticate
- Create new Category of Videos (Only for Admin)
- - Add new videos to a category ( Only for Admin)
- - Get list of categories & videos (For Admin & Viewer)
- - Delete a category (Only for Admin)
- - Update video description (Only for Admin)
+ # Video On Demand ASP.NET Core Web API Endpoints
+ - Register new User (For Admin & Viewer)
+	- Viewer: /api/Users/register
+	- Admin: /api/Users/registeradmin
+ - Login (For Admin & Viewer): /api/Users/authenticate
+ - Create new Category of Videos (Only for Admin): /api/VideoCategories
+ - Add new videos to a category ( Only for Admin): /api/Videos
+ - Get list of categories & videos (For Admin & Viewer): 
+   - /api/VideoCategories
+   - /api/Videos
+ - Delete a category (Only for Admin): /api/VideoCategories/{id}
+ - Update video description (Only for Admin): /api/Videos/{id}
 
-# Tech Stack
+# Dependencies
   - ASP.NET Core Web API : .Net Core 2.2
-     -AutoMapper.Extensions.Microsoft.DependencyInjection
+  - AutoMapper.Extensions.Microsoft.DependencyInjection: For mapping objects
+  - Swagger: For documentation
   
 # Admin user details: 
 	-username: admin
