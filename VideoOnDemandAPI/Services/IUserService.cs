@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using VideoOnDemandAPI.Models;
+﻿using System.Collections.Generic;
+using VideoOnDemandAPI.DataContext;
+using VideoOnDemandAPI.Dtos;
 
 namespace VideoOnDemandAPI.Services
 {
@@ -11,7 +9,7 @@ namespace VideoOnDemandAPI.Services
     User Authenticate(string username, string password);
     IEnumerable<User> GetAll();
     User GetById(int id);
-    User Create(User user, string password);
+    User Create(User user, UserDto userDto);
     void Update(User user, string password = null);
   }
 }

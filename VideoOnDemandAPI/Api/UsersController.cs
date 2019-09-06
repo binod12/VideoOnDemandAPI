@@ -4,19 +4,19 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
 using VideoOnDemandAPI.Dtos;
 using VideoOnDemandAPI.Helpers;
-using VideoOnDemandAPI.Models;
+using VideoOnDemandAPI.DataContext;
 using VideoOnDemandAPI.Services;
 
 namespace VideoOnDemandAPI.Api
 {
+  /// <summary>
+  /// User Controller API for Registering and  Authentication
+  /// </summary>
   [Authorize]
   public class UsersController : BaseApiController
   {
@@ -32,6 +32,11 @@ namespace VideoOnDemandAPI.Api
       _appSettings = appSettings.Value;
     }
 
+    /// <summary>
+    /// Authenticating users based on username and password
+    /// </summary>
+    /// <param name="logOnDto"></param>
+    /// <returns>Returns user along with JWT Token</returns>
     [AllowAnonymous]
     [HttpPost("authenticate")]
     public IActionResult Authenticate([FromBody]UserLogOnDto logOnDto)
@@ -47,7 +52,8 @@ namespace VideoOnDemandAPI.Api
       {
         Subject = new ClaimsIdentity(new Claim[]
           {
-                    new Claim(ClaimTypes.Name, user.Id.ToString())
+                    new Claim(ClaimTypes.Name, user.Id.ToString()),
+                    new Claim(ClaimTypes.Role, user.Role)
           }),
         Expires = DateTime.UtcNow.AddDays(7),
         SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
@@ -68,17 +74,22 @@ namespace VideoOnDemandAPI.Api
       });
     }
 
+    /// <summary>
+    /// Register/Create a Viewer user 
+    /// </summary>
+    /// <param name="userDto"></param>
+    /// <returns></returns>
     [AllowAnonymous]
     [HttpPost("register")]
     public IActionResult Register([FromBody]UserDto userDto)
     {
-      // map dto to entity
+
       var user = _mapper.Map<User>(userDto);
 
       try
       {
-        // save 
-        _userService.Create(user, userDto.Password);
+        user.Role = Role.Viewer;
+        _userService.Create(user, userDto);
         return Ok();
       }
       catch (CustomException ex)
@@ -88,9 +99,14 @@ namespace VideoOnDemandAPI.Api
       }
     }
 
+    /// <summary>
+    /// Register a Admin user
+    /// </summary>
+    /// <param name="userDto"></param>
+    /// <returns></returns>
     [Authorize(Roles = Role.Admin)]
     [HttpPost("registeradmin")]
-    public IActionResult RegisterAdmin([FromBody]UserLogOnDto userDto)
+    public IActionResult RegisterAdmin([FromBody]UserDto userDto)
     {
       // map dto to entity
       var user = _mapper.Map<User>(userDto);
@@ -99,7 +115,7 @@ namespace VideoOnDemandAPI.Api
       {
         // save 
         user.Role = Role.Admin;
-        _userService.Create(user, userDto.Password);
+        _userService.Create(user, userDto);
         return Ok();
       }
       catch (CustomException ex)
@@ -109,7 +125,11 @@ namespace VideoOnDemandAPI.Api
       }
     }
 
-    //[Authorize(Roles = Role.Admin)]
+    /// <summary>
+    /// Get All Users, if the Role is admin
+    /// </summary>
+    /// <returns></returns>
+    [Authorize(Roles = Role.Admin)]
     [HttpGet]
     public IActionResult GetAll()
     {
@@ -117,6 +137,11 @@ namespace VideoOnDemandAPI.Api
       return Ok(users);
     }
 
+    /// <summary>
+    /// Get User by Id, Restrict Admin user id access for Viewer user
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
     [HttpGet("{id}")]
     public IActionResult GetById(int id)
     {

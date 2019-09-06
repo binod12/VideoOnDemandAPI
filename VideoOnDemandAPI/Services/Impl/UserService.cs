@@ -1,14 +1,9 @@
 ﻿using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
-using System;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 using VideoOnDemandAPI.Helpers;
-using VideoOnDemandAPI.Models;
+using VideoOnDemandAPI.DataContext;
+using VideoOnDemandAPI.Dtos;
 
 namespace VideoOnDemandAPI.Services.Impl
 {
@@ -36,7 +31,7 @@ namespace VideoOnDemandAPI.Services.Impl
         return null;
 
       // check if password is correct
-      if (!VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt))
+      if (!Helpers.Utility.VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt))
         return null;
 
       // authentication successful
@@ -46,33 +41,39 @@ namespace VideoOnDemandAPI.Services.Impl
     public IEnumerable<User> GetAll()
     {
       // return users without passwords
-      //Todo: Make password as null
-      //return _context.Users.AsEnumerable().Select(x => { x.Password = null; return x; });
-      return _context.Users.ToList();
+      //Make password related properties  as null
+      return _context.Users.AsEnumerable().Select(user => { user.Password = null; user.PasswordHash = null; user.PasswordSalt = null; return user; });
     }
 
     public User GetById(int id)
     {
       var user = _context.Users.FirstOrDefault(x => x.Id == id);
 
-      // return user without password
+      // return user without password related properties
       if (user != null)
+      {
         user.Password = null;
+        user.PasswordHash = null;
+        user.PasswordSalt = null;
+      }
 
       return user;
     }
 
-    public User Create(User user, string password)
+    public User Create(User user, UserDto userDto)
     {
       // validation
-      if (string.IsNullOrWhiteSpace(password))
+      if (string.IsNullOrWhiteSpace(userDto.Password))
         throw new CustomException("Password is required");
+
+      if (userDto.Password != userDto.RepeatPassword)
+        throw new CustomException("User Password and Repeat password does not match");
 
       if (_context.Users.Any(x => x.Username == user.Username))
         throw new CustomException("Username \"" + user.Username + "\" is already taken");
 
       byte[] passwordHash, passwordSalt;
-      CreatePasswordHash(password, out passwordHash, out passwordSalt);
+      Helpers.Utility.CreatePasswordHash(userDto.Password, out passwordHash, out passwordSalt);
 
       user.PasswordHash = passwordHash;
       user.PasswordSalt = passwordSalt;
@@ -106,7 +107,7 @@ namespace VideoOnDemandAPI.Services.Impl
       if (!string.IsNullOrWhiteSpace(password))
       {
         byte[] passwordHash, passwordSalt;
-        CreatePasswordHash(password, out passwordHash, out passwordSalt);
+        Helpers.Utility.CreatePasswordHash(password, out passwordHash, out passwordSalt);
 
         user.PasswordHash = passwordHash;
         user.PasswordSalt = passwordSalt;
@@ -114,39 +115,6 @@ namespace VideoOnDemandAPI.Services.Impl
 
       _context.Users.Update(user);
       _context.SaveChanges();
-    }
-
-    // private helper methods
-
-    private static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
-    {
-      if (password == null) throw new ArgumentNullException("password");
-      if (string.IsNullOrWhiteSpace(password)) throw new ArgumentException("Value cannot be empty or whitespace only string.", "password");
-
-      using (var hmac = new System.Security.Cryptography.HMACSHA512())
-      {
-        passwordSalt = hmac.Key;
-        passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-      }
-    }
-
-    private static bool VerifyPasswordHash(string password, byte[] storedHash, byte[] storedSalt)
-    {
-      if (password == null) throw new ArgumentNullException("password");
-      if (string.IsNullOrWhiteSpace(password)) throw new ArgumentException("Value cannot be empty or whitespace only string.", "password");
-      if (storedHash.Length != 64) throw new ArgumentException("Invalid length of password hash (64 bytes expected).", "passwordHash");
-      if (storedSalt.Length != 128) throw new ArgumentException("Invalid length of password salt (128 bytes expected).", "passwordHash");
-
-      using (var hmac = new System.Security.Cryptography.HMACSHA512(storedSalt))
-      {
-        var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-        for (int i = 0; i < computedHash.Length; i++)
-        {
-          if (computedHash[i] != storedHash[i]) return false;
-        }
-      }
-
-      return true;
     }
   }
 }

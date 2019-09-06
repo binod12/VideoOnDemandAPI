@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
 
-namespace VideoOnDemandAPI.Models
+namespace VideoOnDemandAPI.DataContext
 {
   public class Video: EntityBase
   {
+    [Required]
     public string Title { get; set; }
 
     public string Description { get; set; }

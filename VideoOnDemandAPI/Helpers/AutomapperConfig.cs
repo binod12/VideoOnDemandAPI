@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using VideoOnDemandAPI.Dtos;
-using VideoOnDemandAPI.Models;
+using VideoOnDemandAPI.DataContext;
 
 namespace VideoOnDemandAPI.Helpers
 {
