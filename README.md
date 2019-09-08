@@ -12,6 +12,8 @@
  - Delete a category (Only for Admin): /api/VideoCategories/{id}
  - Update video description (Only for Admin): /api/Videos/{id}
 
+Note: Alternatively, you may use the following URL for testing
+https://documenter.getpostman.com/view/6993073/SVmpWMJN?version=latest
 # Dependencies
   - ASP.NET Core Web API : .Net Core 2.2
   - AutoMapper.Extensions.Microsoft.DependencyInjection: For mapping objects
