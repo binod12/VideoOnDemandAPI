@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using VideoOnDemandAPI.DataContext;
+using VideoOnDemandAPI.Entities;
 using VideoOnDemandAPI.Dtos;
 
 namespace VideoOnDemandAPI.Services

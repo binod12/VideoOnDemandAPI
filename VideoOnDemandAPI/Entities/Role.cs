@@ -1,4 +1,4 @@
-﻿namespace VideoOnDemandAPI.DataContext
+﻿namespace VideoOnDemandAPI.Entities
 {
   public static class Role
   {

@@ -9,7 +9,7 @@ using System.Security.Claims;
 using System.Text;
 using VideoOnDemandAPI.Dtos;
 using VideoOnDemandAPI.Helpers;
-using VideoOnDemandAPI.DataContext;
+using VideoOnDemandAPI.Entities;
 using VideoOnDemandAPI.Services;
 
 namespace VideoOnDemandAPI.Api

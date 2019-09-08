@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace VideoOnDemandAPI.DataContext
+namespace VideoOnDemandAPI.Entities
 {
   public class Video: EntityBase
   {

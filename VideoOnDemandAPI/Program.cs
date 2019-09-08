@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using VideoOnDemandAPI.DataContext;
+using VideoOnDemandAPI.Entities;
 
 namespace VideoOnDemandAPI
 {
